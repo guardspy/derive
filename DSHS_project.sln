@@ -1,0 +1,220 @@
+#include <stdio.h>
+#include <windows.h>
+#include <tchar.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <time.h>
+#define NAMES _T("usedNames.txt")
+#define RT _T("rt")
+#define WT _T("wt")
+#define AT _T("at")
+#define TXT _T(".txt")
+#define CLS _T("cls")
+ 
+FILE* fp1, *fp2;
+
+void clearLineFromReadBuffer(void);
+class User
+{
+public:
+	void getpw(void);
+	int recallUser(TCHAR rec[4]);
+	int makeRandName(void);	
+	void showName(void){printf(_T("Your name is %s \nLogged in!\n"), name);}
+	void sendMoney(TCHAR rec[4], int money);
+private:
+	TCHAR name[4];
+	TCHAR txt_name[7];
+	TCHAR pw[20];
+	int made=0;
+};
+void User::getpw(void)
+{
+	printf(_T("비밀번호를 입력해주세요: "));
+	scanf(_T("%s"), &pw);
+	clearLineFromReadBuffer();
+}
+int User::recallUser(TCHAR rec[4])
+{
+	int i, same=0;
+	TCHAR line_name[4], line_pw[20];   //파일에서 가져올 이름과 비밀번호 
+	
+	for (i=0;i<3;i++) name[i]=txt_name[i]=rec[i];
+	name[3]='\0';txt_name[3]='\0';
+	strcat(txt_name, TXT);
+	
+	fp1=fopen(NAMES, RT);
+	while (fscanf(fp1, _T("%s %s"), line_name, line_pw)==2)
+	{
+		if (strcmp(line_name, name)==0) 
+		{
+			same=1;
+			break;
+		}
+	}
+	if (!same)
+	{
+		puts(_T("없는 사용자입니다!"));
+		return 0;
+	}
+	
+	getpw();
+	if (strcmp(line_pw, pw)!=0)
+	{
+		puts(_T("비밀번호가 일치하지 않습니다!"));
+		return 0; 
+	}
+	
+	fprintf(fp1, _T("%s\n"), pw);
+	fclose(fp1);
+	return 1;
+}
+int User::makeRandName(void)
+{
+	if (made) return 0;   //한번 사용자 이름과 비밀번호를 등록하면 다시 등록할 수 없음. 현재는 필요없으나 나중에 더 복잡한 기능을 구현할 것을 염두에 둔 코 
+	
+	TCHAR line_name[4], line_pw[20];   //파일에서 가져올 이름과 비밀번호 
+	int i, same=0;
+	
+	srand(time(NULL));
+	
+	fp1=fopen(NAMES, RT);
+	
+	/*중복 검사*/ 
+	while (1)
+	{
+		for (i=0;i<3;i++) name[i]=rand()%26+97;
+		while (fscanf(fp1, _T("%s %s"), line_name, line_pw)==2)
+		{
+			if (strcmp(line_name, name)==0) 
+			{
+				same=1;
+				break;
+			}
+		}
+		if (same) continue;
+		else 
+		{
+			getpw();
+			break;
+		}
+	}
+	
+	for (i=0;i<3;i++) txt_name[i]=name[i];
+	name[3]='\0';txt_name[3]='\0';
+	made=1;
+	
+	fp1=fopen(NAMES, AT);
+	fprintf(fp1, _T("%s %s\n"), name, pw);
+	fclose(fp1);
+	
+	strcat(txt_name, TXT);
+	
+	/*사용자 이름의 텍스트 파일 생성*/ 
+	fp2=fopen(txt_name, AT);
+	fclose(fp2);
+	return 1;
+}
+void User::sendMoney(TCHAR rec[4], int money)
+{
+	TCHAR txt_rec[7];
+	
+	strcpy(txt_rec, rec);
+	txt_rec[4]='\0';
+	strcat(txt_rec, TXT);
+	
+	fp2=fopen(txt_name, AT);
+	fprintf(fp2, _T("%s->%s %d원\n"), name, rec, money);
+	fp2=fopen(txt_rec, AT);
+	fprintf(fp2, _T("%s<-%s %d원\n"), rec, name, money);
+	fclose(fp2);
+	
+	puts(_T("Success!"));
+}
+void clearLineFromReadBuffer(void){while (getchar()!='\n');} 
+
+int _tmain(int argc, TCHAR* argv[])
+{
+	/*주 코드 실행을 위한 정의*/ 
+	int c1;
+	TCHAR c2;
+	TCHAR name[4], rec[4];
+	TCHAR line_name[4], line_pw[20];
+	int money;
+	User usr;
+	
+	/*프로세스 실행을 위한 정의*/ 
+	STARTUPINFO si = { 0, };
+	_PROCESS_INFORMATION pi;
+	TCHAR command[] = _T("calc.exe");
+	DWORD dwExitCode;
+	si.cb = sizeof(si);
+	
+	/*usedNames.txt 생성*/ 
+	fp1=fopen(NAMES, AT);
+	fclose(fp1);
+	
+	/*사용자의 종류 입력*/ 
+	printf(_T("이미 있는 사용자: 1\n등록되지 않은 사용자: 2\n"));
+	scanf(_T("%d"), &c1);
+	clearLineFromReadBuffer();
+	
+	/*사용자의 종류에 따른 분기문*/ 
+	if (c1==1)
+	{
+		printf(_T("이름을 입력하세요: "));
+		scanf(_T("%s"), name);
+		clearLineFromReadBuffer();
+		if (!usr.recallUser(name)) return 0;
+		usr.showName();
+	}
+	else
+	{
+		puts(_T("계정을 생성합니다..."));
+		if (!usr.makeRandName()) return 0;
+		usr.showName();
+	}
+	
+	/*다른 사용자의 이름을 모를 경우*/ 
+	printf(_T("종료할까요? [Y/N]"));
+	scanf(_T("%c"), &c2);
+	clearLineFromReadBuffer();
+	if ((c2=='Y')||(c2=='y'))
+	{
+		puts(_T("종료합니다..."));
+		return 0; 
+	}
+	
+	/*송금*/ 
+	system(CLS);
+	puts("현재 등록된 사용자들은 다음과 같습니다. ");
+	fp1=fopen(NAMES, RT);
+	while (fscanf(fp1, _T("%s %s"), line_name, line_pw)==2) puts(line_name);
+	printf(_T("돈을 받으실 분의 이름을 입력해주세요: "));
+	scanf(_T("%s"), rec);
+	clearLineFromReadBuffer();
+	if (strcmp(name, rec)==0)
+	{
+		puts(_T("자신에게 송금할 수 없습니다!"));
+		return 0; 
+	}	
+	
+	system(CLS);
+	printf(_T("보내실 금액을 입력해주세요(편의를 위해 계산기가 실행됩니다): "));
+	
+	/*계산기 실행*/ 
+	CreateProcess(NULL, command, NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi);
+	
+	/*실제 송금 함수 실행*/ 
+	scanf(_T("%d"), &money);
+	usr.sendMoney(rec, money);
+	
+	/*계산기 종료*/
+	CloseHandle(pi.hThread);
+	WaitForSingleObject(pi.hProcess, INFINITE);
+	GetExitCodeProcess(pi.hProcess, &dwExitCode);
+	CloseHandle(pi.hProcess); 
+		
+	return 0;
+}
