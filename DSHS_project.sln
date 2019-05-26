@@ -90,7 +90,6 @@ int User::makeRandName(void)
 		for (i = 0; i < 3; i++) name[i] = rand() % 26 + 97;
 		while (fscanf(fp1, _T("%s %s"), line_name, line_pw) == 2)
 		{
-			clearLineFromReadBuffer();
 			if (strcmp(line_name, name) == 0)
 			{
 				same = 1;
@@ -156,7 +155,6 @@ int _tmain(int argc, TCHAR* argv[])
 	STARTUPINFO si = { 0, };
 	PROCESS_INFORMATION pi;
 	TCHAR command[] = _T("calc.exe");
-	DWORD dwExitCode;
 	si.cb = sizeof(si);
 
 	/*usedNames.txt 생성*/
@@ -219,9 +217,9 @@ int _tmain(int argc, TCHAR* argv[])
 	usr.sendMoney(rec, money);
 
 	/*계산기 종료*/
-	CloseHandle(pi.hThread);
-	WaitForSingleObject(pi.hProcess, INFINITE);
-	GetExitCodeProcess(pi.hProcess, &dwExitCode);
+	//CloseHandle(pi.hThread);
+	//WaitForSingleObject(pi.hProcess, INFINITE);
+	//GetExitCodeProcess(pi.hProcess, &dwExitCode);
 	CloseHandle(pi.hProcess);
 
 	return 0;
