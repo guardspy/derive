@@ -1,0 +1,29 @@
+/*
+   ___                            
+  /   \                           
+ |  |_|   ___  ____  ____  _ __  ___      
+ | \\_`\ / _ \/ __| / __ \| '_ `'_  \       
+ \ \_| |\  __/\__ \| (_| \| | | | | |    
+ \____|  \___||___|\___, ||_| |_| |_|  
+                   | |_| |                                    
+                   \____| 
+Copyright (c) 2019, Kang Baekjun
+*/
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <windows.h>
+#include <locale.h>
+#include <tlhelp32.h>
+#include <tchar.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <time.h>
+#define NAMES   _T("usedNames.txt")
+#define RT      _T("rt")
+#define WT      _T("wt")
+#define AT      _T("at")
+#define TXT     _T(".txt")
+#define CLS     _T("cls")
+#define COMMAND _T("calc.exe")
+#define KCALC   _T("taskkill /im Calculator.exe /f")
