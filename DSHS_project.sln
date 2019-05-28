@@ -1,6 +1,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <windows.h>
+#include <locale.h>
+#include <tlhelp32.h>
 #include <tchar.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,8 +15,7 @@
 #define TXT     _T(".txt")
 #define CLS     _T("cls")
 #define COMMAND _T("calc.exe")
-#define KCALC   _T("tskill Calculator")
-#define TITLE   _T("title ")
+#define KCALC   _T("taskkill /im Calculator.exe /f")
 
 FILE* fp1, *fp2;
 
@@ -165,8 +166,7 @@ int _tmain(int argc, TCHAR* argv[])
 	STARTUPINFO si = { 0, };
 	PROCESS_INFORMATION pi;
 	si.cb = sizeof(si);
-	HANDLE h;
-
+	
 	/*usedNames.txt 생성*/
 	fp1 = fopen(NAMES, AT);
 	fclose(fp1);
