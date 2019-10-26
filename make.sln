@@ -1,0 +1,49 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <windows.h>
+#include <atlimage.h>
+#include <stdio.h>
+#define WIDTH 1024
+#define HEIGHT 768
+#define HEADER 54
+
+unsigned long BGR[768][1024];
+unsigned int P = CF_BITMAP;
+int FORMATINFO = GetPriorityClipboardFormat(&P, 1);
+HBITMAP BMP;
+BITMAP BMPINFO;
+CImage IMG;
+CImage *pIMG = NULL;
+
+int main(void)
+{
+	FILE* fp = fopen("MSImage.bmp", "wb");
+	fclose(fp);
+	fp = fopen("MSImage.bmp", "rb");
+
+	if (FORMATINFO == CF_BITMAP)
+	{
+		if (OpenClipboard(NULL))
+		{
+			BMP = (HBITMAP)GetClipboardData(FORMATINFO);
+			if (BMP != NULL)
+			{
+				GetObject(BMP, sizeof(BITMAP), &BMPINFO);
+
+				pIMG->Create(BMPINFO.bmWidth, BMPINFO.bmHeight, BMPINFO.bmBitsPixel);
+
+				for (int i = 0; i < 3; i++)
+				{
+					for (int j = 0; j < 3; j++)
+					{
+						BGR[i][j] = pIMG->GetPixel(i, j);
+						printf("%d\n", GetRValue(BGR[i][j]));
+					}
+				}
+			}
+		}
+		CloseClipboard();
+	}
+
+	fclose(fp);
+	return 0;
+}
