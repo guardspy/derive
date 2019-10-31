@@ -1,0 +1,38 @@
+unsigned long long pow(int a, int n)
+{
+	if (n == 0) return 1;
+	else return a * pow(a, n - 1);
+}
+vector<int> DtoHbyLIn(unsigned long long dec, int maxcnt, int isMinus)
+{
+	int cnt = 0;
+
+	if (isMinus) dec = pow(16, maxcnt * 2) - dec;
+	vector<int> hex;
+	hex.resize(maxcnt);
+
+	while (cnt < maxcnt)
+	{
+		hex[cnt++] = dec % 256;
+		dec /= 256;
+	}
+
+	return hex;
+}
+void makeBMPheader(FILE* fp, int width, int height, int bitCount)
+{
+	unsigned long long dec = width * height * bitCount / 8;
+	char hexbuf2[2];
+	char hexbuf4[4];
+
+	putc(0x42, fp); putc(0x4D, fp); 
+	for (int i = 0; i < 4; i++) putc(DtoHbyLIn(dec, 4, 0)[i], fp);
+	for (int i = 6; i < 18; i++) putc(header[i], fp);
+	for (int i = 0; i < 4; i++) putc(DtoHbyLIn(width, 4, 0)[i], fp);
+	for (int i = 0; i < 4; i++) putc(DtoHbyLIn(height, 4, 1)[i], fp);
+	putc(0x01, fp); putc(0x00, fp);
+	for (int i = 0; i < 2; i++) putc(DtoHbyLIn(bitCount, 2, 0)[i], fp);
+	for (int i = 30; i < 54; i++) putc(header[i], fp);
+
+	return;
+}
