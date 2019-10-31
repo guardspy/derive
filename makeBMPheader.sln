@@ -38,3 +38,50 @@ void makeBMPheader(FILE* fp, int width, int height, int bitCount)
 
 	return;
 }
+
+int main(void)
+{
+	FILE* fp = fopen("MSImage.bmp", "wb");
+
+	if (FORMATINFO == CF_BITMAP)
+	{
+		if (OpenClipboard(NULL))
+		{
+			BMP = (HBITMAP)GetClipboardData(FORMATINFO);
+			if (BMP != NULL)
+			{
+				GetObject(BMP, sizeof(BITMAP), &BMPINFO);
+
+				IMG.Create(BMPINFO.bmWidth, BMPINFO.bmHeight, BMPINFO.bmBitsPixel);
+				h_dc = CreateCompatibleDC(NULL);
+				SelectObject(h_dc, BMP);
+				BitBlt(IMG.GetDC(), 0, 0, BMPINFO.bmWidth, BMPINFO.bmHeight, h_dc, 0, 0, SRCCOPY);
+				printf("%d %d %d", BMPINFO.bmWidth, BMPINFO.bmHeight, BMPINFO.bmBitsPixel);
+
+				makeBMPheader(fp, BMPINFO.bmWidth, BMPINFO.bmHeight, BMPINFO.bmBitsPixel);
+
+				for (int i = 0; i < BMPINFO.bmHeight; i++)
+				{
+					for (int j = 0; j < BMPINFO.bmWidth; j++)
+					{
+						BGR = IMG.GetPixel(j, i);
+						putc(GetBValue(BGR), fp);
+						putc(GetGValue(BGR), fp);
+						putc(GetRValue(BGR), fp);
+						putc(0x00, fp);
+					}
+				}
+			}
+
+			IMG.ReleaseDC();
+			DeleteDC(h_dc);
+		}
+		else puts("Failed to open your clipboard, please try again");
+
+		CloseClipboard();
+	}
+	else puts("Failed to find a *.bmp file from your clipboard, please try again");
+
+	fclose(fp);
+	return 0;
+}
