@@ -38,26 +38,26 @@ class Song:
         thisLine = self.notes.pop(0)
         if thisLine[5]:
             if thisLine[0] == 1:
-                thisLine[0] = note.Note(self.screen, 0, 0, 8, 120, True)
+                thisLine[0] = Note(self.screen, 0, 0, 8, 120, True)
             if thisLine[1] == 1:
-                thisLine[1] = note.Note(self.screen, 120, 0, 8, 120, True)
+                thisLine[1] = Note(self.screen, 120, 0, 8, 120, True)
             if thisLine[2] == 1:
-                thisLine[2] = note.Note(self.screen, 240, 0, 8, 120, True)
+                thisLine[2] = Note(self.screen, 240, 0, 8, 120, True)
             if thisLine[3] == 1:
-                thisLine[3] = note.Note(self.screen, 360, 0, 8, 120, True)
+                thisLine[3] = Note(self.screen, 360, 0, 8, 120, True)
             if thisLine[4] == 1:
-                thisLine[4] = note.Note(self.screen, 480, 0, 8, 120, True)
+                thisLine[4] = Note(self.screen, 480, 0, 8, 120, True)
         else:
             if thisLine[0] == 1:
-                thisLine[0] = note.Note(self.screen, 20, 0, 8, 80, False)
+                thisLine[0] = Note(self.screen, 20, 0, 8, 80, False)
             if thisLine[1] == 1:
-                thisLine[1] = note.Note(self.screen, 140, 0, 8, 80, False)
+                thisLine[1] = Note(self.screen, 140, 0, 8, 80, False)
             if thisLine[2] == 1:
-                thisLine[2] = note.Note(self.screen, 260, 0, 8, 80, False)
+                thisLine[2] = Note(self.screen, 260, 0, 8, 80, False)
             if thisLine[3] == 1:
-                thisLine[3] = note.Note(self.screen, 380, 0, 8, 80, False)
+                thisLine[3] = Note(self.screen, 380, 0, 8, 80, False)
             if thisLine[4] == 1:
-                thisLine[4] = note.Note(self.screen, 500, 0, 8, 80, False)
+                thisLine[4] = Note(self.screen, 500, 0, 8, 80, False)
             
         if thisLine[:5] != [0, 0, 0, 0, 0]: self.shown.insert(0, thisLine)
         return 1
